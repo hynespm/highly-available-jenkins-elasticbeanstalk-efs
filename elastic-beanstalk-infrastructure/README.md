@@ -11,9 +11,9 @@ The cloudformation template creates an elastic beanstalk application and two env
 
 ## Prerequisites : 
 
-*VPC-Id (VPC-Id)
-*Subnet Id in one Az (VPC-AZ1-Id)
-*Subnet Id in a second Az (VPC-AZ2-Id)
+* VPC-Id (VPC-Id)
+* Subnet Id in one Az (VPC-AZ1-Id)
+* Subnet Id in a second Az (VPC-AZ2-Id)
 
 
 ## Feedback

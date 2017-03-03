@@ -11,10 +11,10 @@ The cloudformation template creates two Elastic Filesystems which are to be moun
 
 ## Prerequisites : 
 
-*VPC-Id (VPC-Id)
-*Subnet Id in one Az (VPC-AZ1-Id)
-*Subnet Id in a second Az (VPC-AZ2-Id)
-*Security Group for Jenkins - JenkinsEBEFSServerSG
+* VPC-Id (VPC-Id)
+* Subnet Id in one Az (VPC-AZ1-Id)
+* Subnet Id in a second Az (VPC-AZ2-Id)
+* Security Group for Jenkins - JenkinsEBEFSServerSG
 
 
 ## Feedback
