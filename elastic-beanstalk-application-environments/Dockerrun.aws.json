@@ -1,0 +1,18 @@
+{
+  "AWSEBDockerrunVersion": "1",
+   "Image": {
+    "Name": "jenkinsci/jenkins:latest",
+    "Update": "true"
+  },
+  "Ports": [
+    {
+      "ContainerPort": "8080"
+    }
+  ],
+  "Volumes": [
+    {
+      "HostDirectory": "/efs",
+      "ContainerDirectory": "/var/jenkins_home"
+    }
+  ]
+}

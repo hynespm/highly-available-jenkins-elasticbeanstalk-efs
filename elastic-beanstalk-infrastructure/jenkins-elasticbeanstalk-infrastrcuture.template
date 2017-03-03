@@ -1,0 +1,354 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Cloudformation template for the creation of the Elastic Beanstalk application for Jenkins ",
+  "Metadata": {
+    "Version": "v1.0",
+    "Comment": "Created by Patrick Hynes"
+  },
+  
+  "Outputs" : {
+    	"jenkinsProdS3Backup": {
+            "Value": {"Ref": "jenkinsProdS3Backup"},
+            "Description": "S3 bucket for the backup of the production efs",
+            "Export": {
+        			"Name": "jenkinsProdS3Backup"
+      		}
+        },
+        "jenkinsDevS3Backup": {
+            "Value": {"Ref": "jenkinsDevS3Backup"},
+            "Description": "S3 bucket for the backup of the development efs",
+            "Export": {
+        			"Name": "jenkinsDevS3Backup"
+      		}
+        }
+    }, 
+  
+  "Parameters": {
+    "applicationName": {
+      "Type": "String",
+      "Default": "jenkins-build-server"
+    },
+    "JenkinsInstanceType": {
+      "Type": "String",
+      "Description": "Instance type/size for Jenkins Build Servers",
+      "Default": "m4.large"
+    },
+    "TagCostCenter": {
+      "Type": "Number",
+      "Default": "0000000",
+      "Description": "Cost center number to bill resource against - 7 digit number normally.",
+      "MinValue": "0000000",
+      "MaxValue": "9999999"
+    },
+    "TagOwner": {
+      "Type": "String",
+      "Default": "Patrick Hynes",
+      "Description": "Team (or person) launching instance and/or responsible for maintenance."
+    },
+    "TagUseCase": {
+      "Type": "String",
+      "Default": "Jenkins Build Server",
+      "Description": "Team (or person) launching instance and/or responsible for maintenance."
+    },
+    "TagApplication": {
+      "Type": "String",
+      "Default": "Jenkins",
+      "Description": "Team (or person) launching instance and/or responsible for maintenance."
+    }
+  },
+  "Resources": {
+    "jenkinsProdS3Backup": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "wlgore-sharedservices-jenkins-prod-backup",
+        "LifecycleConfiguration" :{
+          "Rules" : [ {
+            "ExpirationInDays" : 2,
+            "Status" : "Enabled"
+          } ] 
+        },
+         "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "TagApplication"
+            }
+          },
+          {
+            "Key": "Cost Center",
+            "Value": {
+              "Ref": "TagCostCenter"
+            }
+          },
+          {
+            "Key": "Owner",
+            "Value": {
+              "Ref": "TagOwner"
+            }
+          },
+          {
+            "Key": "Owner",
+            "Value": {
+              "Ref": "TagOwner"
+            }
+          },
+          {
+            "Key": "Environment",
+            "Value": "production"
+          }
+        ]
+      }
+    },
+    "jenkinsDevS3Backup": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "wlgore-sharedservices-jenkins-dev-backup",
+        "LifecycleConfiguration" :{
+          "Rules" : [ {
+            "ExpirationInDays" : 2,
+            "Status" : "Enabled"
+          } ] 
+        },
+         "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "TagApplication"
+            }
+          },
+          {
+            "Key": "Cost Center",
+            "Value": {
+              "Ref": "TagCostCenter"
+            }
+          },
+          {
+            "Key": "Owner",
+            "Value": {
+              "Ref": "TagOwner"
+            }
+          },
+          {
+            "Key": "Owner",
+            "Value": {
+              "Ref": "TagOwner"
+            }
+          },
+          {
+            "Key": "Environment",
+            "Value": "development"
+          }
+        ]
+      }
+    },
+    "jenkinsApplication": {
+      "Type": "AWS::ElasticBeanstalk::Application",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "applicationName"
+        },
+        "Description": "AWS Elastic Beanstalk Jenkins Build Server Application"
+      }
+    },
+    "jenkinsEnvironmentConfigurationTemplate": {
+      "Type": "AWS::ElasticBeanstalk::ConfigurationTemplate",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "jenkinsApplication"
+        },
+        "Description": "Jenkins Environment Configuration",
+        "EnvironmentId": "",
+        "SolutionStackName": "64bit Amazon Linux 2016.09 v2.5.0 running Docker 1.12.6",
+        "OptionSettings": [
+          {
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "EC2KeyName",
+            "Value": "global-shared-services"
+          },
+          {
+            "Namespace": "aws:ec2:vpc",
+            "OptionName": "VPCId",
+            "Value": {
+              "Fn::ImportValue": "VPC-Id"
+            }
+          },
+          {
+            "Namespace": "aws:ec2:vpc",
+            "OptionName": "Subnets",
+            "Value": {
+              "Fn::Join": [
+                ",",
+                [
+                  {
+                    "Fn::ImportValue": "VPC-AZ1-Id"
+                  },
+                  {
+                    "Fn::ImportValue": "VPC-AZ2-Id"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "Namespace": "aws:ec2:vpc",
+            "OptionName": "ELBSubnets",
+            "Value": {
+              "Fn::Join": [
+                ",",
+                [
+                  {
+                    "Fn::ImportValue": "VPC-AZ1-Id"
+                  },
+                  {
+                    "Fn::ImportValue": "VPC-AZ2-Id"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "EC2KeyName",
+            "Value": "global-shared-services"
+          },
+          {
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "InstanceType",
+            "Value": {
+              "Ref": "JenkinsInstanceType"
+            }
+          },
+          {
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "IamInstanceProfile",
+            "Value": {
+              "Fn::ImportValue": "JenkinsEC2-InstanceProfile"
+            }
+          },
+          {
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "SecurityGroups",
+            "Value": {
+              "Fn::ImportValue": "JenkinsEBEFSServerSG"
+            }
+          },
+          {
+            "Namespace": "aws:autoscaling:asg",
+            "OptionName": "MinSize",
+            "Value": "1"
+          },
+          {
+            "Namespace": "aws:autoscaling:asg",
+            "OptionName": "MaxSize",
+            "Value": "1"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:environment",
+            "OptionName": "EnvironmentType",
+            "Value": "LoadBalanced"
+          }
+        ]
+      }
+    },
+    "jenkinsDevEnvironment": {
+      "Type": "AWS::ElasticBeanstalk::Environment",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "jenkinsApplication"
+        },
+        "EnvironmentName": "jenkins-server-development",
+        "Description": "Jenkins Environment Configuration",
+        "TemplateName": {
+          "Ref": "jenkinsEnvironmentConfigurationTemplate"
+        },
+        "OptionSettings": [
+          {
+            "Namespace": "aws:ec2:vpc",
+            "OptionName": "ELBScheme",
+            "Value": "Internal"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "TagApplication"
+            }
+          },
+          {
+            "Key": "Cost Center",
+            "Value": {
+              "Ref": "TagCostCenter"
+            }
+          },
+          {
+            "Key": "Owner",
+            "Value": {
+              "Ref": "TagOwner"
+            }
+          },
+          {
+            "Key": "Owner",
+            "Value": {
+              "Ref": "TagOwner"
+            }
+          },
+          {
+            "Key": "Environment",
+            "Value": "development"
+          }
+        ]
+      }
+    },
+    "jenkinsProdEnvironment": {
+      "Type": "AWS::ElasticBeanstalk::Environment",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "jenkinsApplication"
+        },
+        "EnvironmentName": "jenkins-server-production",
+        "Description": "Jenkins Production Environment",
+        "TemplateName": {
+          "Ref": "jenkinsEnvironmentConfigurationTemplate"
+        },
+        "OptionSettings": [
+          {
+            "Namespace": "aws:ec2:vpc",
+            "OptionName": "ELBScheme",
+            "Value": "Internal"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "TagApplication"
+            }
+          },
+          {
+            "Key": "Cost Center",
+            "Value": {
+              "Ref": "TagCostCenter"
+            }
+          },
+          {
+            "Key": "Owner",
+            "Value": {
+              "Ref": "TagOwner"
+            }
+          },
+          {
+            "Key": "Owner",
+            "Value": {
+              "Ref": "TagOwner"
+            }
+          },
+          {
+            "Key": "Environment",
+            "Value": "production"
+          }
+        ]
+      }
+    }
+  }
+}

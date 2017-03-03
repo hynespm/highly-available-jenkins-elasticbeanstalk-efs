@@ -1,0 +1,124 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Cloudformation template for the Codecommit repositories for the Jenkins application",
+  "Metadata": {
+    "Version": "v1.0",
+    "Comment": "Created by Patrick Hynes"
+  },
+  "Resources": {
+    "JenkinsCodeCommitRepo": {
+      "Type": "AWS::CodeCommit::Repository",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "RepositoryName": "jenkins-repositories",
+        "RepositoryDescription": "Code repository for the template that outlines the codecommit repos for Jenkins"
+      }
+    },
+    "JenkinsEBInfrastructureRepo": {
+      "Type": "AWS::CodeCommit::Repository",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "RepositoryName": "jenkins-eb-infrastructure",
+        "RepositoryDescription": "Code repository for the cloudformation template of the eb infrastructure for Jenkins"
+      }
+    },
+    "JenkinsAppRepo": {
+      "Type": "AWS::CodeCommit::Repository",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "RepositoryName": "jenkins-eb-app",
+        "RepositoryDescription": "Code repository for the Elasticbeanstalk application for Jenkins"
+      }
+    },
+    "JenkinsSGRepo": {
+      "Type": "AWS::CodeCommit::Repository",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "RepositoryName": "jenkins-sg-ip",
+        "RepositoryDescription": "Code repository for Jenkins security groups and instance profiles"
+      }
+    },
+    "JenkinsEFSRepo": {
+      "Type": "AWS::CodeCommit::Repository",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "RepositoryName": "jenkins-efs",
+        "RepositoryDescription": "Code repository for Jenkins EFS"
+      }
+    },
+    "JenkinsWorkerInfrastructureRepo": {
+      "Type": "AWS::CodeCommit::Repository",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "RepositoryName": "jenkins-worker-infrastructure",
+        "RepositoryDescription": "Code repository for Jenkins Workder elasticbeanstalk infrastructure"
+      }
+    },
+    "JenkinsWorkerAppRepo": {
+      "Type": "AWS::CodeCommit::Repository",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "RepositoryName": "jenkins-worker-eb-app",
+        "RepositoryDescription": "Code repository for the Elasticbeanstalk application for Jenkins Workers"
+      }
+    }
+  },
+  "Outputs": {
+    "JenkinsWorkerAppRepo": {
+      "Value": {
+        "Ref": "JenkinsWorkerAppRepo"
+      },
+      "Export": {
+        "Name": "JenkinsWorkerApp-Repo"
+      }
+    },
+    "JenkinsWorkerInfrastructureRepo": {
+      "Value": {
+        "Ref": "JenkinsWorkerInfrastructureRepo"
+      },
+      "Export": {
+        "Name": "JenkinsWorkerInfrastructure-Repo"
+      }
+    },
+    "JenkinsEBInfrastructureRepo": {
+      "Value": {
+        "Ref": "JenkinsEBInfrastructureRepo"
+      },
+      "Export": {
+        "Name": "JenkinsEBInfrastructure-Repo"
+      }
+    },
+    "JenkinsCodeCommitRepo": {
+      "Value": {
+        "Ref": "JenkinsCodeCommitRepo"
+      },
+      "Export": {
+        "Name": "JenkinsCodeCommit-Repo"
+      }
+    },
+    "JenkinsAppRepo": {
+      "Value": {
+        "Ref": "JenkinsAppRepo"
+      },
+      "Export": {
+        "Name": "JenkinsEB-Repo"
+      }
+    },
+    "JenkinsSGRepo": {
+      "Value": {
+        "Ref": "JenkinsSGRepo"
+      },
+      "Export": {
+        "Name": "JenkinsSG-Repo"
+      }
+    },
+    "JenkinsEFSRepo": {
+      "Value": {
+        "Ref": "JenkinsEFSRepo"
+      },
+      "Export": {
+        "Name": "JenkinsEFS-Repo"
+      }
+    }
+  }
+}

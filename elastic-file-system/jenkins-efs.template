@@ -1,0 +1,194 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description" : "Cloudformation template for the EFS component of the Jenkins infrastructure", 
+  "Parameters": {
+    "TagCostCenter": {
+      "Type": "Number",
+      "Default": "0017130",
+      "Description": "Cost center number to bill resource against - 7 digit number normally.",
+      "MinValue": "0000000",
+      "MaxValue": "9999999"
+    },
+    "TagOwner": {
+      "Type": "String",
+      "Default": "Patrick Hynes",
+      "Description": "Team (or person) launching instance and/or responsible for maintenance."
+    },
+    "TagUseCase": {
+      "Type": "String",
+      "Default": "Jenkins Build Server",
+      "Description": "Team (or person) launching instance and/or responsible for maintenance."
+    },
+    "TagApplication": {
+      "Type": "String",
+      "Default": "Jenkins",
+      "Description": "Team (or person) launching instance and/or responsible for maintenance."
+    }
+  },
+  "Outputs": {
+    "JenkinsEFSProd": {
+      "Value": {
+        "Ref": "JenkinsEFSProd"
+      },
+      "Export": {
+        "Name": "JenkinsEFSProd"
+      }
+    },
+    "JenkinsEFSDev": {
+      "Value": {
+        "Ref": "JenkinsEFSDev"
+      },
+      "Export": {
+        "Name": "JenkinsEFSDev"
+      }
+    }
+  },
+  "Resources": {
+    "JenkinsEFSProd": {
+      "Type": "AWS::EFS::FileSystem",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FileSystemTags": [
+           {
+            "Key": "Name",
+            "Value": "jenkins-efs-prod"
+          },
+          {
+            "Key": "Owner",
+            "Value": {
+              "Ref": "TagOwner"
+            }
+          },
+          {
+            "Key": "CostCenter",
+            "Value": {
+              "Ref": "TagCostCenter"
+            }
+          },
+          {
+            "Key": "Environment",
+            "Value": "production"
+          },
+          {
+            "Key": "Use Case",
+            "Value": {
+              "Ref": "TagUseCase"
+            }
+          },
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "TagApplication"
+            }
+          }
+        ],
+        "PerformanceMode": "generalPurpose"
+      }
+    },
+    "JenkinsEFSDev": {
+      "Type": "AWS::EFS::FileSystem",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FileSystemTags": [
+          {
+            "Key": "Name",
+            "Value": "jenkins-efs-dev"
+          },
+          {
+            "Key": "Owner",
+            "Value": {
+              "Ref": "TagOwner"
+            }
+          },
+          {
+            "Key": "CostCenter",
+            "Value": {
+              "Ref": "TagCostCenter"
+            }
+          },
+          {
+            "Key": "Environment",
+            "Value": "development"
+          },
+          {
+            "Key": "Use Case",
+            "Value": {
+              "Ref": "TagUseCase"
+            }
+          },
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "TagApplication"
+            }
+          }
+        ],
+        "PerformanceMode": "generalPurpose"
+      }
+    },
+    "MountTargetAZ1JenkinsDev": {
+      "Type": "AWS::EFS::MountTarget",
+      "Properties": {
+        "FileSystemId": {
+          "Ref": "JenkinsEFSDev"
+        },
+        "SubnetId": {
+          "Fn::ImportValue": "VPC-AZ1-Id"
+        },
+        "SecurityGroups": [
+          {
+           "Fn::ImportValue": "JenkinsEBEFSServerSG"
+          }
+        ]
+      }
+    },
+    "MountTargetAZ2JenkinsDev": {
+      "Type": "AWS::EFS::MountTarget",
+      "Properties": {
+        "FileSystemId": {
+          "Ref": "JenkinsEFSDev"
+        },
+        "SubnetId": {
+          "Fn::ImportValue": "VPC-AZ2-Id"
+        },
+        "SecurityGroups": [
+          {
+            "Fn::ImportValue": "JenkinsEBEFSServerSG"
+          }
+        ]
+      }
+    },
+    "MountTargetAZ1JenkinsProd": {
+      "Type": "AWS::EFS::MountTarget",
+      "Properties": {
+        "FileSystemId": {
+          "Ref": "JenkinsEFSProd"
+        },
+        "SubnetId": {
+          "Fn::ImportValue": "VPC--AZ1-Id"
+        },
+        "SecurityGroups": [
+          {
+            "Fn::ImportValue": "JenkinsEBEFSServerSG"
+          }
+        ]
+      }
+    },
+    "MountTargetAZ2JenkinsProd": {
+      "Type": "AWS::EFS::MountTarget",
+      "Properties": {
+        "FileSystemId": {
+          "Ref": "JenkinsEFSProd"
+        },
+        "SubnetId": {
+          "Fn::ImportValue": "VPC-AZ2-Id"
+        },
+        "SecurityGroups": [
+          {
+           "Fn::ImportValue": "JenkinsEBEFSServerSG"
+          }
+        ]
+      }
+    }
+  }
+}
