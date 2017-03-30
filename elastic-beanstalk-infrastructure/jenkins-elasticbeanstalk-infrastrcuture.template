@@ -63,7 +63,7 @@
         "BucketName": "wlgore-sharedservices-jenkins-prod-backup",
         "LifecycleConfiguration" :{
           "Rules" : [ {
-            "ExpirationInDays" : 2,
+            "ExpirationInDays" : 7,
             "Status" : "Enabled"
           } ] 
         },
@@ -105,7 +105,7 @@
         "BucketName": "wlgore-sharedservices-jenkins-dev-backup",
         "LifecycleConfiguration" :{
           "Rules" : [ {
-            "ExpirationInDays" : 2,
+            "ExpirationInDays" : 7,
             "Status" : "Enabled"
           } ] 
         },

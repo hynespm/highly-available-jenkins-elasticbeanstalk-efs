@@ -1,4 +1,4 @@
-## Description : Collection of Cloudformation templates which outline how to setup a highly available Jenkins build server deployed to Elasticbeanstalk with a Elastic file system.
+## Description : Collection of Cloudformation templates which outline how to setup a highly available Jenkins build server deployed to Elastic Beanstalk backed by an Elastic file system.
 
 ## Author : Patrick Hynes
 
@@ -13,6 +13,11 @@ The repository is broken down into folders corresponding to the different compon
 * Security Group cloudformation templates : Templates for the necessary security groups and instance profiles used by both the efs systems and the elasticbeanstalk ec2 instances in both environments (prod & dev)
 * Jenkins Master Elastic Beanstalk cloudformation templates : Templates for the necessary EB apps and environments (prod & dev)
 * Codecommit cloudformation templates : Creates the necessary Codecommit repositories
+
+## Important Note
+
+This infrastructure works well for a jenkins master that does not require using Jenkins slaves. This is due to how docker containers with multiple port requirements are deployed in EB.
+
 
 ## Feedback
 
